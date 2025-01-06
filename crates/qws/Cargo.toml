@@ -1,0 +1,17 @@
+[package]
+name = "qxb-widget-system"
+description = "Create a quick and easy custom widgets for your desktop."
+version = "0.0.1"
+repository = "https://github.com/qxb3/qws"
+homepage = "https://github.com/qxb3/qws"
+license = "MIT"
+edition = "2021"
+
+[[bin]]
+name = "qws"
+path = "./src/main.rs"
+
+[dependencies]
+gtk-layer-shell = "0.8.2"
+gtk4 = "0.9.5"
+gtk4-layer-shell = "0.4.0"
