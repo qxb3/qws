@@ -7,7 +7,6 @@ pub enum Tokens {
     Float,
     Boolean,
 
-    SString,
     Script,
     Css,
 

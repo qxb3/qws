@@ -82,16 +82,24 @@ impl<'a> Lexer<'a> {
 
             // String
             if char == '"' {
-                let string = self.lex_contained('"', Tokens::String)?;
+                let string = self.lex_string()?;
                 tokens.push(string);
 
                 continue;
             }
 
-            // SString
-            if char == '%' {
-                let string = self.lex_contained('%', Tokens::SString)?;
-                tokens.push(string);
+            // Script
+            if char == 'S' && self.peek("cript".chars()) {
+                let script = self.lex_raw(Tokens::Script)?;
+                tokens.push(script);
+
+                continue;
+            }
+
+            // Css
+            if char == 'C' && self.peek("ss".chars()) {
+                let css = self.lex_raw(Tokens::Css)?;
+                tokens.push(css);
 
                 continue;
             }
@@ -120,7 +128,7 @@ impl<'a> Lexer<'a> {
         Ok(tokens)
     }
 
-    fn lex_contained(&mut self, c: char, r#type: Tokens) -> LexerResult<Token> {
+    fn lex_string(&mut self) -> LexerResult<Token> {
         let mut buff = String::new();
 
         // Skip '"'
@@ -128,7 +136,7 @@ impl<'a> Lexer<'a> {
         self.advance();
 
         while let Some(char) = self.current_char {
-            if char == c {
+            if char == '"' {
                 self.col += 1;
                 self.advance();
                 break;
@@ -139,7 +147,7 @@ impl<'a> Lexer<'a> {
         }
 
         Ok(Token::new(
-            r#type,
+            Tokens::String,
             Some(buff),
             self.line,
             self.col
@@ -247,18 +255,60 @@ impl<'a> Lexer<'a> {
         })
     }
 
+    fn lex_raw(&mut self, r#type: Tokens) -> LexerResult<Token> {
+        let mut buff = String::new();
+        let mut braces = 0;
+
+        while let Some(char) = self.current_char {
+            if char == '{' {
+                braces += 1;
+
+                self.col += 1;
+                self.advance();
+
+                break;
+            }
+
+            self.advance();
+        }
+
+        while braces > 0 {
+            if let Some(char) = self.current_char {
+                match char {
+                    '{' => braces += 1,
+                    '}' => braces -= 1,
+                    _ => {}
+                }
+
+                buff.push(char);
+
+                self.col += 1;
+                self.advance();
+            }
+        }
+
+        Ok(Token::new(
+            r#type,
+            Some(buff),
+            self.line,
+            self.col
+        ))
+    }
+
     fn advance(&mut self) {
         self.current_char = self.chars.next();
     }
 
-    fn peek<T>(&mut self, chars: T) -> bool
+    fn peek<T>(&mut self, peeks: T) -> bool
     where
         T: IntoIterator,
         T::Item: Into<char>
     {
-        for char in chars {
-            if let Some(c) = self.chars.peek() {
-                if *c != char.into() {
+        let mut chars = self.chars.clone();
+
+        for char in peeks {
+            if let Some(c) = chars.next() {
+                if c != char.into() {
                     return false;
                 }
             }

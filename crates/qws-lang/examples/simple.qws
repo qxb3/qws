@@ -4,6 +4,20 @@ Window {
   anchor = ["left", "right", "top"]
   vexpand = true
 
+  Script {
+    local message = "Hello, World"
+  }
+
+  Css {
+    .my_widget {
+      background-color: #000;
+
+      & .hello_world {
+        color: #fff;
+      }
+    }
+  }
+
   Box {
     class_name = "my_widget"
     vertical = true
@@ -13,18 +27,4 @@ Window {
       text = "$message"
     }
   }
-
-  Script %
-    local message = "Hello, World"
-  %
-
-  Css %
-    .my_widget {
-      background-color: #000;
-
-      & .hello_world {
-        color: #fff;
-      }
-    }
-  %
 }
