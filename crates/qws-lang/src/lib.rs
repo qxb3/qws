@@ -1,14 +1,14 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+mod token;
+mod lexer;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub use token::Tokens;
+pub use token::Token;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+pub use lexer::Lexer;
+pub use lexer::LexerErr;
+pub use lexer::LexerResult;
+
+pub fn lex(code: &String) -> LexerResult<Vec<Token>> {
+    let mut lexer = Lexer::new(code);
+    lexer.lex()
 }

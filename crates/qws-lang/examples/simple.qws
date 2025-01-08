@@ -1,0 +1,30 @@
+-- simple.qws example
+
+Window {
+  anchor = ["left", "right", "top"]
+  vexpand = true
+
+  Box {
+    class_name = "my_widget"
+    vertical = true
+
+    Label {
+      class_name = "hello_world"
+      text = "$message"
+    }
+  }
+
+  Script %
+    local message = "Hello, World"
+  %
+
+  Css %
+    .my_widget {
+      background-color: #000;
+
+      & .hello_world {
+        color: #fff;
+      }
+    }
+  %
+}
